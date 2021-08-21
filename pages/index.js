@@ -1,209 +1,269 @@
-import Head from 'next/head'
+import React from 'react';
+import update from 'react-addons-update';
+import Firebase from '../config/firebase';
+import { Bar } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-export default function Home() {
-  return (
-    <div className="container">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+const styles = theme => ({
+  root: {
+    padding: '0 20px',
+  },
+  loading: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh"
+  },
+  textHead: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  candidateContent: {
+    padding: '0 20px'
+  },
+  candidateItem: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+  candidateImage: {
+    width: '100%'
+  }
+})
 
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+class App extends React.Component{
+  constructor(props) {
+    super(props);
+    this.charts = [];
+    this.state = {
+      charts: [],
+      tps: [],
+      candidate: [],
+      voices: [],
+      options: [],
+      isLoading: true,
+    };
+  }
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
+  componentWillUnmount(){
+    this.unsubscribe();
+  }
 
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+	componentDidMount(){
+    Firebase.firestore()
+      .collection('tps')
+      .get()
+      .then(snap => {
+        const data = snap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        this.setState({
+          tps: data
+        }, () => {
+          let newVoices = [];
 
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+          this.state.tps.forEach(item => {
+            this.unsubscribe = Firebase.firestore()
+              .collection('voting')
+              .where('tps', '==', item.id)
+              .orderBy('candidateName')
+              .onSnapshot(snap => {
+                let type;
+                const tps = item.id;
+                const labels = [];
+                const datasets =  [
+                  {
+                    label: [item.location],
+                    backgroundColor: ['#FF4848', '#9DDAC6'],
+                    borderColor: '#FFD371',
+                    borderWidth: 1,
+                    data: []
+                  }
+                ]
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+                const newOption = {
+                  animation: false,
+                  scale: {
+                    ticks: {
+                      precision: 0
+                    }
+                  },
+                  // scales: {
+                  //   y: {
+                  //     min: 0,
+                  //     max: 1000,
+                  //   }
+                  // },
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: item.location,
+                      padding: 20
+                    },
+                    datalabels: {
+                      display: true,
+                      color: '#000000',
+                      align: 'end',
+                      anchor: 'end',
+                      font: { size: '14' }
+                    },
+                    legend: {
+                      display: false,
+                    }
+                  },
+                }
 
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+                this.setState(prevState => ({
+                  options: [...prevState.options, newOption]
+                }));
+
+                snap.docChanges().forEach((change) => {
+                  if (change.type === "added") {
+                    type = 'added';
+                    labels.push(change.doc.data().candidateName);
+                    datasets[0].data.push(change.doc.data().voice);
+
+                    if(newVoices.some(item => item.id == change.doc.data().candidate)) {
+                      newVoices.map(item => {
+                        if(item.id === change.doc.data().candidate) {
+                          item.voice = item.voice + change.doc.data().voice;
+                        }
+                      })
+                    } else {
+                      newVoices.push({
+                        id: change.doc.data().candidate,
+                        voice: change.doc.data().voice
+                      });
+                    }
+                  }
+
+                  if (change.type === "modified") {
+                    type = 'modified';
+                    const {
+                      charts
+                    } = this.state
+                    const candidateName = change.doc.data().candidateName.toString().toLowerCase();
+                    const tpsIdx = this.state.charts.findIndex(chart => chart.tps === tps);
+                  
+                    charts.forEach(chart => {
+                      if(chart.tps === change.doc.data().tps) {
+                        const idx = chart.labels.findIndex(label => label.toString().toLowerCase() === candidateName);
+
+                        // const newChart = this.charts[change.doc.data().tps];
+                        // newChart.data.datasets[0].data[idx] = change.doc.data().voice;
+                        // newChart.update();
+
+                        this.setState({
+                          charts: update(this.state.charts, {[tpsIdx]: {datasets: {0: {data: {[idx]: {$set: change.doc.data().voice}}}}}}),
+                        });
+                      }
+                    });
+
+                    const candidateIdx = this.state.voices.findIndex(voice => voice.id === change.doc.data().candidate);
+                    this.setState({
+                      voices: update(this.state.voices, {[candidateIdx]: {voice: {$set: this.state.voices[candidateIdx].voice + 1}}})
+                    });
+                  }
+                });
+
+                if(type === 'added') {
+                  this.setState(prevState => ({
+                    charts: [...prevState.charts, { tps: tps, labels: labels, datasets: datasets}],
+                    voices: newVoices
+                  }), () => {
+                    this.setState({
+                      isLoading: false
+                    })
+                  });
+                }
+              })
+          })
+        });
+      });
+
+    Firebase.firestore()
+      .collection('candidate')
+      .orderBy('createdAt', 'asc')
+      .get()
+      .then(snap => {
+        snap.forEach((doc) => {
+          this.setState(prevState => ({
+            candidate: [...prevState.candidate, {id: doc.id, ...doc.data()}]
+          }), () => {
+            console.log(this.state.candidate)
+          });
+        })
+      })
+	}
+
+	render() {
+    const { classes } = this.props;
+
+    if(this.state.isLoading) {
+      return (
+        <div className={classes.loading}>
+          <CircularProgress />
         </div>
-      </main>
+      )
+    }
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className="logo" />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
-  )
+    return (
+      <div className={classes.root}>
+        <h2 className={classes.textHead}>Perhitungan Suara Pilkades Sukaratu Tahun 2021</h2>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={12} md={3} lg={2}>
+            <Grid className={classes.candidateContent} container spacing={3}>
+              <List className={classes.candidateItem}>
+                { this.state.candidate.length !== 0 &&  this.state.candidate.map(data => (
+                  <ListItem key={data.id}>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <img className={classes.candidateImage} src={data.image} />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={<p>Total Suara <b>{data.name}</b></p>}
+                      secondary={<Typography variant="h4" style={{ color: '#000' }}>
+                        {this.state.voices.find(item => item.id === data.id).voice}
+                      </Typography>}
+                    />
+                  </ListItem>
+                  ))
+                }
+              </List>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} sm={12} md={9} lg={10}>
+            <Grid container spacing={3}>
+              { this.state.charts.map((data, idx) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
+                    <Bar
+                      ref={chart => this.charts[data.tps] = chart}
+                      data={data}
+                      plugins={[ChartDataLabels]}
+                      options={this.state.options[idx]}
+                      height={180}
+                    />
+                  </Grid>
+                ))
+              }
+            </Grid>
+          </Grid>
+        </Grid>
+      </div>
+    )
+	}
 }
+
+export default withStyles(styles, { withTheme: true })(App);
