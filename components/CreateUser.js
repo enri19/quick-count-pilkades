@@ -6,7 +6,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/input';
+import Input from '@material-ui/core/Input';
 
 const CreateUser = () => {
   const [tps, setTps] = useState([]);
