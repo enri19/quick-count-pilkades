@@ -84,7 +84,7 @@ class App extends React.Component{
                 const labels = [];
                 const datasets =  [
                   {
-                    label: [item.name],
+                    label: [item.location],
                     backgroundColor: ['#FF4848', '#9DDAC6'],
                     borderColor: '#FFD371',
                     borderWidth: 1,
@@ -108,7 +108,7 @@ class App extends React.Component{
                   plugins: {
                     title: {
                       display: true,
-                      text: item.location,
+                      text: item.name,
                       padding: 20
                     },
                     datalabels: {
