@@ -62,7 +62,6 @@ class App extends React.Component{
 	componentDidMount(){
     Firebase.firestore()
       .collection('tps')
-      .orderBy('name', '==', 'ASC')
       .get()
       .then(snap => {
         const data = snap.docs.map(doc => ({
