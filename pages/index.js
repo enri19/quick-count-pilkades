@@ -62,6 +62,7 @@ class App extends React.Component{
 	componentDidMount(){
     Firebase.firestore()
       .collection('tps')
+      .orderBy('name')
       .get()
       .then(snap => {
         const data = snap.docs.map(doc => ({
@@ -108,7 +109,7 @@ class App extends React.Component{
                   plugins: {
                     title: {
                       display: true,
-                      text: item.location,
+                      text: item.name,
                       padding: 20
                     },
                     datalabels: {
