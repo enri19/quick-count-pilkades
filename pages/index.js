@@ -110,7 +110,12 @@ class App extends React.Component{
                     title: {
                       display: true,
                       text: item.name,
-                      padding: 20
+                      padding: 0
+                    },
+                    subtitle: {
+                      display: true,
+                      text: item.location,
+                      padding: 10
                     },
                     datalabels: {
                       display: true,
