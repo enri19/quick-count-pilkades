@@ -4,6 +4,7 @@ import { FormControl, InputLabel, Input, FormHelperText, Button } from '@materia
 
 const CreateCandidate = () => {
   const [name, setName] = useState('');
+  const [serialNumber, setSerialNumber] = useState('');
   const [image, setImage] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [progress, setProgress] = useState('0');
@@ -15,6 +16,7 @@ const CreateCandidate = () => {
       .collection('candidate')
       .add({
         name: name,
+        serialNumber: serialNumber,
         image: imageUrl,
         voice: 0,
         createdAt: new Date(),
@@ -28,6 +30,8 @@ const CreateCandidate = () => {
   const handleImageAsFile = (e) => {
     const image = e.target.files[0]
     setImage(image);
+
+    console.log(image)
   }
 
   const handleUpload = () => {
@@ -36,7 +40,7 @@ const CreateCandidate = () => {
     var storageRef = storage.ref();
     var uploadTask = storageRef.child('candidate/' + file.name).put(file);
   
-    uploadTask.on(Firebase.storage.TaskEvent.STATE_CHANGED,
+    uploadTask.on(Firebase.firebase_.storage.TaskEvent.STATE_CHANGED,
       (snapshot) =>{
         var progress = Math.round((snapshot.bytesTransferred/snapshot.totalBytes))*100
         setProgress(progress);
@@ -57,6 +61,12 @@ const CreateCandidate = () => {
           <FormControl fullWidth={true}>
             <InputLabel htmlFor="candidate-name">Nama Calon</InputLabel>
             <Input id="candidate-name" value={name} required={true} aria-describedby="helper-candidate-name" onChange={({target}) => setName(target.value)} />
+          </FormControl>
+        </div>
+        <div>
+          <FormControl fullWidth={true}>
+            <InputLabel htmlFor="candidate-serial-number">Nomor Urut</InputLabel>
+            <Input id="candidate-serial-number" value={serialNumber} required={true} aria-describedby="helper-candidate-serial-number" onChange={({target}) => setSerialNumber(target.value)} />
           </FormControl>
         </div>
         <div>

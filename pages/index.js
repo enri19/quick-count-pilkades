@@ -86,7 +86,7 @@ class App extends React.Component{
                 const datasets =  [
                   {
                     label: [item.location],
-                    backgroundColor: ['#FF4848', '#9DDAC6'],
+                    backgroundColor: ['#FFB830', '#3DB2FF', '#FF2442'],
                     borderColor: '#FFD371',
                     borderWidth: 1,
                     data: []
@@ -100,12 +100,12 @@ class App extends React.Component{
                       precision: 0
                     }
                   },
-                  // scales: {
-                  //   y: {
-                  //     min: 0,
-                  //     max: 1000,
-                  //   }
-                  // },
+                  scales: {
+                    y: {
+                      min: 0,
+                      max: parseInt(item.ballot),
+                    }
+                  },
                   plugins: {
                     title: {
                       display: true,
@@ -114,7 +114,7 @@ class App extends React.Component{
                     },
                     subtitle: {
                       display: true,
-                      text: item.location,
+                      text: `${item.location} (Total DPT ${item.ballot})`,
                       padding: 10
                     },
                     datalabels: {
@@ -200,7 +200,7 @@ class App extends React.Component{
 
     Firebase.firestore()
       .collection('candidate')
-      .orderBy('createdAt', 'asc')
+      .orderBy('serialNumber', 'asc')
       .get()
       .then(snap => {
         snap.forEach((doc) => {
@@ -228,7 +228,7 @@ class App extends React.Component{
       <div className={classes.root}>
         <h2 className={classes.textHead}>Perhitungan Suara Pilkades Sukaratu Tahun 2021</h2>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={12} md={3} lg={2}>
+          <Grid item xs={12} sm={12} md={4} lg={3}>
             <Grid className={classes.candidateContent} container spacing={3}>
               <List className={classes.candidateItem}>
                 { this.state.candidate.length !== 0 &&  this.state.candidate.map(data => (
@@ -250,7 +250,7 @@ class App extends React.Component{
               </List>
             </Grid>
           </Grid>
-          <Grid item xs={12} sm={12} md={9} lg={10}>
+          <Grid item xs={12} sm={12} md={8} lg={9}>
             <Grid container spacing={3}>
               { this.state.charts.map((data, idx) => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
@@ -259,7 +259,7 @@ class App extends React.Component{
                       data={data}
                       plugins={[ChartDataLabels]}
                       options={this.state.options[idx]}
-                      height={180}
+                      height={300}
                     />
                   </Grid>
                 ))
