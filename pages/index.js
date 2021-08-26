@@ -78,7 +78,7 @@ class App extends React.Component{
             this.unsubscribe = Firebase.firestore()
               .collection('voting')
               .where('tps', '==', item.id)
-              .orderBy('candidateName')
+              .orderBy('candidateNumber')
               .onSnapshot(snap => {
                 let type;
                 const tps = item.id;
@@ -86,7 +86,7 @@ class App extends React.Component{
                 const datasets =  [
                   {
                     label: [item.location],
-                    backgroundColor: ['#FFB830', '#3DB2FF', '#FF2442'],
+                    backgroundColor: ['#FFEDDA', '#FF2442', '#FFB830', '#3DB2FF'],
                     borderColor: '#FFD371',
                     borderWidth: 1,
                     data: []

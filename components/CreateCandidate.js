@@ -16,7 +16,7 @@ const CreateCandidate = () => {
       .collection('candidate')
       .add({
         name: name,
-        serialNumber: serialNumber,
+        serialNumber: parseInt(serialNumber),
         image: imageUrl,
         voice: 0,
         createdAt: new Date(),

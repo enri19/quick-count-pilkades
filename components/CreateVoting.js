@@ -106,7 +106,7 @@ const CreateVoting = () => {
         village: villageValue,
         tps: tpsValue,
         candidate: item.id,
-        candidateName: item.name,
+        candidateNumber: parseInt(item.serialNumber),
         voice: item.voice,
         createdAt: new Date(),
         editedAt: null
