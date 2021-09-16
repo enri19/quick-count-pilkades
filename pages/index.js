@@ -227,6 +227,7 @@ class App extends React.Component{
     return (
       <div className={classes.root}>
         <h2 className={classes.textHead}>Perhitungan Suara Pilkades Sukaratu Tahun 2021</h2>
+<p>data ini tidak valid, data ini hanya sebagai bahan testing</p>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={4} lg={3}>
             <Grid className={classes.candidateContent} container spacing={3}>
