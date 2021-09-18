@@ -39,12 +39,28 @@ const styles = theme => ({
   },
   candidateItem: {
     width: '100%',
-    maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
+    color: "#fff"
   },
   candidateImage: {
     width: '100%'
-  }
+  },
+  listItem: {
+    margin: "0 0 10px 0",
+    borderRadius: "15px"
+  },
+  bg0: {
+    backgroundColor: "#181A18"
+  },
+  bg1: {
+    backgroundColor: "#FF2442"
+  },
+  bg2: {
+    backgroundColor: "#FFB830"
+  },
+  bg3: {
+    backgroundColor: "#3DB2FF"
+  },
 })
 
 class App extends React.Component{
@@ -92,7 +108,7 @@ class App extends React.Component{
                 const datasets =  [
                   {
                     label: [item.location],
-                    backgroundColor: ['#FFEDDA', '#FF2442', '#FFB830', '#3DB2FF'],
+                    backgroundColor: ['#181A18', '#FF2442', '#FFB830', '#3DB2FF'],
                     borderColor: '#FFD371',
                     borderWidth: 1,
                     data: []
@@ -221,6 +237,20 @@ class App extends React.Component{
 
 	render() {
     const { classes } = this.props;
+    const getColor = (serialNumber) => {
+      if(serialNumber === -1) {
+        return classes.bg0;
+      }
+      if(serialNumber === 0) {
+        return classes.bg1;
+      }
+      if(serialNumber === 1) {
+        return classes.bg2;
+      }
+      if(serialNumber === 2) {
+        return classes.bg3;
+      }
+    }
 
     if(this.state.isLoading) {
       return (
@@ -233,21 +263,21 @@ class App extends React.Component{
     return (
       <div className={classes.root}>
         <h2 className={classes.textHead}>Perhitungan Cepat Pilkades Sukaratu Tahun 2021</h2>
-	<p className={classes.textSub}>data ini tidak valid, data ini hanya sebagai bahan testing</p>
+	      <p className={classes.textSub}>data ini tidak valid, data ini hanya sebagai bahan testing</p>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={4} lg={3}>
             <Grid className={classes.candidateContent} container spacing={3}>
               <List className={classes.candidateItem}>
                 { this.state.candidate.length !== 0 &&  this.state.candidate.map(data => (
-                  <ListItem key={data.id}>
+                  <ListItem className={classes.listItem} classes={{ root: getColor(data.serialNumber) }} key={data.id}>
                     <ListItemAvatar>
                       <Avatar>
                         <img className={classes.candidateImage} src={data.image} />
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={<p>Total Suara <b>{data.name}</b></p>}
-                      secondary={<Typography variant="h4" style={{ color: '#000' }}>
+                      primary={<b>{data.name}</b>}
+                      secondary={<Typography variant="h4" style={{ color: '#fff' }}>
                         {this.state.voices.find(item => item.id === data.id).voice}
                       </Typography>}
                     />
