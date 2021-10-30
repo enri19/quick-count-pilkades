@@ -1,12 +1,12 @@
-import CreateTps from '../../components/CreateTps';
+// import CreateTps from '../../components/CreateTps';
 
-const User = () => {
+// const User = () => {
 
-  return (
-    <div>
-      <CreateTps />
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <CreateTps />
+//     </div>
+//   )
+// }
 
-export default User;
+// export default User;
