@@ -1,12 +1,12 @@
-import CreateVoting from '../../components/CreateVoting';
+// import CreateVoting from '../../components/CreateVoting';
 
-const Voting = () => {
+// const Voting = () => {
 
-  return (
-    <div>
-      <CreateVoting />
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <CreateVoting />
+//     </div>
+//   )
+// }
 
-export default Voting;
+// export default Voting;
