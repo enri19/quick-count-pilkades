@@ -26,7 +26,8 @@ const styles = theme => ({
   textHead: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: "20px"
   },
   textSub: {
     display: "flex",
