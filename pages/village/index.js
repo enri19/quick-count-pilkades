@@ -1,12 +1,12 @@
-import CreateVillage from '../../components/CreateVillage';
+// import CreateVillage from '../../components/CreateVillage';
 
-const Village = () => {
+// const Village = () => {
 
-  return (
-    <div>
-      <CreateVillage />
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <CreateVillage />
+//     </div>
+//   )
+// }
 
-export default Village;
+// export default Village;
