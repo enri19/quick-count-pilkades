@@ -27,7 +27,7 @@ const styles = theme => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: "20px"
+    marginBottom: "36px"
   },
   textSub: {
     display: "flex",
