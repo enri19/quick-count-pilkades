@@ -1,12 +1,12 @@
-import CreateCandidate from '../../components/CreateCandidate';
+// import CreateCandidate from '../../components/CreateCandidate';
 
-const Candidate = () => {
+// const Candidate = () => {
 
-  return (
-    <div>
-      <CreateCandidate />
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <CreateCandidate />
+//     </div>
+//   )
+// }
 
-export default Candidate;
+// export default Candidate;
