@@ -1,12 +1,13 @@
-// import CreateUser from '../../components/CreateUser';
+import CreateUser from '../../components/CreateUser';
 
-// const User = () => {
+const User = () => {
 
-//   return (
-//     <div>
+  return (
+    <div>
 //       <CreateUser />
-//     </div>
-//   )
-// }
+          <p>coming soon</p>
+    </div>
+  )
+}
 
-// export default User;
+export default User;
